@@ -1,5 +1,3 @@
-import { bold } from "https://deno.land/std@0.157.0/fmt/colors.ts";
-
 // deno-lint-ignore no-explicit-any
 type JSON = Record<string, any>;
 
@@ -8,7 +6,7 @@ interface Options {
   hideFunctions?: boolean;
   lineTransform?: (
     prevLine: string,
-    flags: { last: boolean; leaf: boolean },
+    flags: { last: boolean },
   ) => string;
 }
 
@@ -65,7 +63,7 @@ function growBranch(
       (line += ": " + root);
     circular && (line += " (circular ref.)");
 
-    currTree.tree += options.lineTransform(line, { last, leaf: false });
+    currTree.tree += options.lineTransform(line, { last });
   }
 
   if (!circular && typeof root === "object") {
@@ -91,12 +89,8 @@ export function jsonTree(
   const baseOptions: Required<Options> = {
     showValues: true,
     hideFunctions: false,
-    lineTransform: (prevLine, { last, leaf: _leaf }) => {
-      if (last) {
-        return bold(prevLine) + "\n";
-      } else {
-        return prevLine + "\n";
-      }
+    lineTransform: (prevLine) => {
+      return prevLine + "\n";
     },
   };
 
