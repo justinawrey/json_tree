@@ -17,6 +17,7 @@ function filterKeys(obj: any, hideFunctions: any) {
     if (hideFunctions && ((typeof obj[branch]) === "function")) {
       continue;
     }
+    // @ts-ignore
     keys.push(branch);
   }
   return keys;
