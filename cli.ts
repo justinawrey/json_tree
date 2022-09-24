@@ -1,5 +1,4 @@
 import { jsonTree } from "./mod.ts";
-import { readJson } from "https://deno.land/std/fs/read_json.ts";
 
 if (import.meta.main) {
   const args = Deno.args.slice();
@@ -7,15 +6,15 @@ if (import.meta.main) {
   switch (command) {
     case "path":
       for (const arg of args) {
-        const data = await readJson(arg);
-        console.log(jsonTree(data, true));
+        const data = await import(arg, { assert: { type: "json" } });
+        console.log(jsonTree(data));
       }
       break;
     case "fetch":
       for (const arg of args) {
         const database = await fetch(arg);
         const data = await database.json();
-        console.log(jsonTree(data, true));
+        console.log(jsonTree(data));
       }
       break;
   }
