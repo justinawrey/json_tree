@@ -87,7 +87,7 @@ function growBranch(
   }
 }
 
-export function jsonTree(
+export default function jsonTree(
   obj: JSON,
   options: Options = {},
 ) {
