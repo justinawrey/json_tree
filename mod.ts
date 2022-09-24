@@ -1,5 +1,6 @@
+// TODO: enforce true json
 // deno-lint-ignore no-explicit-any
-type JSON = Record<string, any>;
+type Json = Record<string, any>;
 
 type lineTransform = (
   prevLine: string,
@@ -12,7 +13,7 @@ interface Options {
 }
 
 interface State {
-  tree: JSON;
+  tree: Json;
   last: boolean;
 }
 
@@ -28,7 +29,7 @@ function makePrefix(key: string, last: boolean) {
 
 function growBranch(
   key: string,
-  root: JSON,
+  root: Json,
   last: boolean,
   lastStates: State[],
   currTree: { tree: string },
@@ -76,7 +77,7 @@ function growBranch(
 }
 
 export default function jsonTree(
-  obj: JSON,
+  obj: Json,
   options: Options = {},
 ) {
   const baseOptions: Required<Options> = {
