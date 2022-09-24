@@ -1,9 +1,14 @@
 // deno-lint-ignore no-explicit-any
 type JSON = Record<string, any>;
 
+type TransformFunc = (input: string) => string;
+const identityTransform: TransformFunc = (x) => x;
+
 interface Options {
   showValues?: boolean;
   hideFunctions?: boolean;
+  dirTransform?: TransformFunc;
+  leafTransform?: TransformFunc;
 }
 
 function makePrefix(key: string, last: boolean) {
@@ -35,7 +40,7 @@ function growBranch(
   root: JSON,
   last: boolean,
   lastStates: [JSON, boolean][],
-  options: Options,
+  options: Required<Options>,
   callback: (prevLine: string) => void,
 ) {
   let line = "";
@@ -63,7 +68,7 @@ function growBranch(
   }
 
   if (!circular && typeof root === "object") {
-    const keys = filterKeys(root, options.hideFunctions ?? false);
+    const keys = filterKeys(root, options.hideFunctions);
     keys.forEach(function (branch) {
       lastKey = ++index === keys.length;
       growBranch(
@@ -80,18 +85,24 @@ function growBranch(
 
 export function jsonTree(
   obj: JSON,
-  options: Options = {
+  options: Options = {},
+) {
+  const baseOptions: Required<Options> = {
     showValues: true,
     hideFunctions: false,
-  },
-) {
+    leafTransform: identityTransform,
+    dirTransform: identityTransform,
+  };
+
+  const mergedOptions = { ...baseOptions, ...options };
+
   let tree = "";
   growBranch(
     ".",
     obj,
     false,
     [],
-    options,
+    mergedOptions,
     function (line) {
       tree += line + "\n";
     },
