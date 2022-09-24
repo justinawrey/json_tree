@@ -22,10 +22,12 @@ the `tree` command on Unixy platforms.
 It also works well with larger nested hierarchies such as file system directory
 trees.
 
-## Usage
+## Quick start
+
+### Programmatic
 
 ```ts
-import { jsonTree } from "https://deno.land/x/justinawrey/json_tree@{VERSION}/mod.ts";
+import { jsonTree } from "https://deno.land/x/jsontree@{VERSION}/mod.ts";
 console.log(
   jsonTree({
     apples: "gala", //  ├─ apples: gala
@@ -41,33 +43,33 @@ Alternatively, you can use it directly from the CLI:
 #### Read JSON from local directory
 
 ```bash
-deno run --allow-read https://deno.land/x/justinawrey/json_tree@1.0.0/cli.ts path sample.json
+deno run --allow-read https://deno.land/x/jsontree@1.0.0/cli.ts path sample.json
 ```
 
 #### Read JSON from server
 
 ```bash
-deno run --allow-net https://deno.land/x/justinawrey/json_tree@1.0.0/cli.ts fetch https://jsonplaceholder.typicode.com/users
+deno run --allow-net https://deno.land/x/jsontree@1.0.0/cli.ts fetch https://jsonplaceholder.typicode.com/users
 ```
 
 #### Install globally
 
 ```bash
-deno install --allow-net --allow-read -n json-tree https://deno.land/x/justinawrey/json_tree@1.0.0/cli.ts
+deno install --allow-net --allow-read -n jsontree https://deno.land/x/jsontree@1.0.0/cli.ts
 ```
 
 Then, the binary is available to run:
 
 ```bash
-json-tree
+jsontree
 ```
 
-### Configuration
+## Configuration
 
 Required permissions:
 
-1. `--allow-net`
-2. `--allow-read`
+1. `--allow-net` (if using cli `fetch` option)
+2. `--allow-read` (if using cli `path` option or programmatic API)
 
 ## Usage
 
@@ -81,12 +83,17 @@ Where:
 - `showValues`: Whether or not to show the object values in the tree
 - `hideFunctions` : Whether or not to show functions in the tree
 
-### Screenshots
+## Screenshots
 
-##### Console With Values
+### With Values
 
 ![image](https://raw.githubusercontent.com/satty1987/json_tree/master/screenshots/consoleWithValues.jpg)
 
-##### Console Without Values
+### Without Values
 
 ![image](https://raw.githubusercontent.com/satty1987/json_tree/master/screenshots/consoleWithoutValues.jpg)
+
+## Acknowledgement
+
+This is a fork of the original
+[satty1987/json_tree](https://github.com/satty1987/json_tree) module.
