@@ -26,17 +26,6 @@ function makePrefix(key: string, last: boolean) {
   return str;
 }
 
-function filterKeys(obj: JSON) {
-  const keys = [];
-  for (const branch in obj) {
-    if (!(branch in obj)) {
-      continue;
-    }
-    keys.push(branch);
-  }
-  return keys;
-}
-
 function growBranch(
   key: string,
   root: JSON,
@@ -71,7 +60,7 @@ function growBranch(
   }
 
   if (!circular && typeof root === "object") {
-    const keys = filterKeys(root);
+    const keys = Object.keys(root);
     keys.forEach(function (branch) {
       lastKey = ++index === keys.length;
       growBranch(
