@@ -69,6 +69,7 @@ function growBranch(
     circular && (line += " (circular ref.)");
 
     currTree.tree += options.lineTransform(line, { last });
+    currTree.tree += "\n";
   }
 
   if (!circular && typeof root === "object") {
@@ -94,9 +95,7 @@ export default function jsonTree(
   const baseOptions: Required<Options> = {
     showValues: true,
     hideFunctions: false,
-    lineTransform: (prevLine) => {
-      return prevLine + "\n";
-    },
+    lineTransform: (prevLine) => prevLine,
   };
 
   const mergedOptions = { ...baseOptions, ...options };
