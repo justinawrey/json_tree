@@ -35,7 +35,7 @@ function growBranch(
   root: JSON,
   last: boolean,
   lastStates: [JSON, boolean][],
-  options: Required<Options>,
+  options: Options,
   callback: (prevLine: string) => void,
 ) {
   let line = "";
@@ -63,7 +63,7 @@ function growBranch(
   }
 
   if (!circular && typeof root === "object") {
-    const keys = filterKeys(root, options.hideFunctions);
+    const keys = filterKeys(root, options.hideFunctions ?? false);
     keys.forEach(function (branch) {
       lastKey = ++index === keys.length;
       growBranch(
@@ -80,7 +80,7 @@ function growBranch(
 
 export function jsonTree(
   obj: JSON,
-  options: Required<Options> = {
+  options: Options = {
     showValues: true,
     hideFunctions: false,
   },
