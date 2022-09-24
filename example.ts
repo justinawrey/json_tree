@@ -234,5 +234,5 @@ const data = [
 ];
 
 console.log(
-  jsonTree(data, true),
+  jsonTree(data),
 );
