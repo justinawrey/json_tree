@@ -3,7 +3,6 @@ type JSON = Record<string, any>;
 
 interface Options {
   showValues?: boolean;
-  hideFunctions?: boolean;
   lineTransform?: (
     prevLine: string,
     flags: { last: boolean },
@@ -25,13 +24,10 @@ function makePrefix(key: string, last: boolean) {
   return str;
 }
 
-function filterKeys(obj: JSON, hideFunctions: boolean) {
+function filterKeys(obj: JSON) {
   const keys = [];
   for (const branch in obj) {
     if (!(branch in obj)) {
-      continue;
-    }
-    if (hideFunctions && ((typeof obj[branch]) === "function")) {
       continue;
     }
     keys.push(branch);
@@ -73,7 +69,7 @@ function growBranch(
   }
 
   if (!circular && typeof root === "object") {
-    const keys = filterKeys(root, options.hideFunctions);
+    const keys = filterKeys(root);
     keys.forEach(function (branch) {
       lastKey = ++index === keys.length;
       growBranch(
@@ -94,7 +90,6 @@ export default function jsonTree(
 ) {
   const baseOptions: Required<Options> = {
     showValues: true,
-    hideFunctions: false,
     lineTransform: (prevLine) => prevLine,
   };
 

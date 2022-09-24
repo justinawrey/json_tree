@@ -74,14 +74,13 @@ Required permissions:
 ## Usage
 
 ```js
-jsonTree(obj, { showValues?: boolean, hideFunctions?: boolean })
+jsonTree(obj, { showValues?: boolean })
 ```
 
 Where:
 
-- `obj`: json Object
-- `showValues`: Whether or not to show the object values in the tree
-- `hideFunctions` : Whether or not to show functions in the tree
+- `obj`: json object
+- `showValues`: whether or not to show the object values in the tree
 
 ## Screenshots
 
