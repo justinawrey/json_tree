@@ -10,6 +10,11 @@ interface Options {
   ) => string;
 }
 
+interface State {
+  tree: JSON;
+  last: boolean;
+}
+
 function makePrefix(key: string, last: boolean) {
   let str = (last ? "└" : "├");
   if (key) {
@@ -38,7 +43,7 @@ function growBranch(
   key: string,
   root: JSON,
   last: boolean,
-  lastStates: [JSON, boolean][],
+  lastStates: State[],
   currTree: { tree: string },
   options: Required<Options>,
 ) {
@@ -49,8 +54,8 @@ function growBranch(
 
   const lastStatesCopy = lastStates.slice(0);
 
-  if (lastStatesCopy.push([root, last]) && lastStates.length > 0) {
-    lastStates.forEach(([tree, last], idx) => {
+  if (lastStatesCopy.push({ tree: root, last }) && lastStates.length > 0) {
+    lastStates.forEach(({ tree, last }, idx) => {
       if (idx > 0) {
         line += (last ? " " : "│") + "  ";
       }
