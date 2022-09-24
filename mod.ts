@@ -1,14 +1,15 @@
+import { bold } from "https://deno.land/std@0.157.0/fmt/colors.ts";
+
 // deno-lint-ignore no-explicit-any
 type JSON = Record<string, any>;
-
-type TransformFunc = (input: string) => string;
-const identityTransform: TransformFunc = (x) => x;
 
 interface Options {
   showValues?: boolean;
   hideFunctions?: boolean;
-  dirTransform?: TransformFunc;
-  leafTransform?: TransformFunc;
+  lineTransform?: (
+    prevLine: string,
+    flags: { last: boolean; leaf: boolean },
+  ) => string;
 }
 
 function makePrefix(key: string, last: boolean) {
@@ -40,8 +41,8 @@ function growBranch(
   root: JSON,
   last: boolean,
   lastStates: [JSON, boolean][],
+  currTree: { tree: string },
   options: Required<Options>,
-  callback: (prevLine: string) => void,
 ) {
   let line = "";
   let index = 0;
@@ -64,7 +65,7 @@ function growBranch(
       (line += ": " + root);
     circular && (line += " (circular ref.)");
 
-    callback(line);
+    currTree.tree += options.lineTransform(line, { last, leaf: false });
   }
 
   if (!circular && typeof root === "object") {
@@ -76,8 +77,8 @@ function growBranch(
         root[branch],
         lastKey,
         lastStatesCopy,
+        currTree,
         options,
-        callback,
       );
     });
   }
@@ -90,22 +91,26 @@ export function jsonTree(
   const baseOptions: Required<Options> = {
     showValues: true,
     hideFunctions: false,
-    leafTransform: identityTransform,
-    dirTransform: identityTransform,
+    lineTransform: (prevLine, { last, leaf: _leaf }) => {
+      if (last) {
+        return bold(prevLine) + "\n";
+      } else {
+        return prevLine + "\n";
+      }
+    },
   };
 
   const mergedOptions = { ...baseOptions, ...options };
 
-  let tree = "";
+  const currTree = { tree: "" };
   growBranch(
     ".",
     obj,
     false,
     [],
+    currTree,
     mergedOptions,
-    function (line) {
-      tree += line + "\n";
-    },
   );
-  return tree;
+
+  return currTree.tree;
 }
