@@ -22,17 +22,15 @@ the `tree` command on Unixy platforms.
 It also works well with larger nested hierarchies such as file system directory
 trees.
 
-## Getting it
-
-### For use with deno
+## Usage
 
 ```ts
-import { jsonTree } from "https://deno.land/x/json_tree/mod.ts";
+import { jsonTree } from "https://deno.land/x/justinawrey/json_tree@{VERSION}/mod.ts";
 console.log(
   jsonTree({
     apples: "gala", //  ├─ apples: gala
     oranges: "mandarin", //  └─ oranges: mandarin
-  }, true),
+  }),
 );
 ```
 
@@ -40,28 +38,28 @@ console.log(
 
 Alternatively, you can use it directly from the CLI:
 
-#### Read Json from local directory
+#### Read JSON from local directory
 
 ```bash
-deno run --allow-read https://deno.land/x/json_tree/cli.ts path sample.json
+deno run --allow-read https://deno.land/x/justinawrey/json_tree@1.0.0/cli.ts path sample.json
 ```
 
-#### Read Json from server
+#### Read JSON from server
 
 ```bash
-deno run --allow-net https://deno.land/x/json_tree/cli.ts fetch https://jsonplaceholder.typicode.com/users
+deno run --allow-net https://deno.land/x/justinawrey/json_tree@1.0.0/cli.ts fetch https://jsonplaceholder.typicode.com/users
 ```
 
-You can also install it globally using the following:
+#### Install globally
 
 ```bash
-deno install --allow-net --allow-read -n jsonTree https://deno.land/x/json_tree/cli.ts
+deno install --allow-net --allow-read -n json-tree https://deno.land/x/justinawrey/json_tree@1.0.0/cli.ts
 ```
 
-Then, the package is available to run:
+Then, the binary is available to run:
 
 ```bash
-jsonTree
+json-tree
 ```
 
 ### Configuration
@@ -73,20 +71,17 @@ Required permissions:
 
 ## Usage
 
-The methods exposed to you are as follows, in a strange kind of signature
-notation:
-
-### jsonTree()
-
 ```js
-jsonTree(obj, showValues (boolean), hideFunctions?:bollean)
-
-obj : json Object
-showValues : To Show the object values in tree. set it true or false
-hideFunctions : To Show the function in tree. set it true or false
+jsonTree(obj, { showValues?: boolean, hideFunctions?: boolean })
 ```
 
-### ScreenShots
+Where:
+
+- `obj`: json Object
+- `showValues`: Whether or not to show the object values in the tree
+- `hideFunctions` : Whether or not to show functions in the tree
+
+### Screenshots
 
 ##### Console With Values
 
