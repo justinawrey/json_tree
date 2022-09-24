@@ -18,6 +18,7 @@ const data = {
   phone: {
     area: 604,
     code: "983-0192",
+    ext: null,
   },
 };
 

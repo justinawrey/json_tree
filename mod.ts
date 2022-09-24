@@ -1,6 +1,10 @@
-// TODO: enforce true json
-// deno-lint-ignore no-explicit-any
-type Json = Record<string, any>;
+type JSONValue =
+  | string
+  | number
+  | boolean
+  | null
+  | { [x: string]: JSONValue }
+  | Array<JSONValue>;
 
 type lineTransform = (
   prevLine: string,
@@ -13,7 +17,7 @@ interface Options {
 }
 
 interface State {
-  tree: Json;
+  tree: JSONValue;
   last: boolean;
 }
 
@@ -29,7 +33,7 @@ function makePrefix(key: string, last: boolean) {
 
 function growBranch(
   key: string,
-  root: Json,
+  root: JSONValue,
   last: boolean,
   lastStates: State[],
   currTree: { tree: string },
@@ -52,7 +56,8 @@ function growBranch(
       }
     });
     line += makePrefix(key, last) + key;
-    options.showValues && (typeof root !== "object" || root instanceof Date) &&
+    options.showValues &&
+      (typeof root !== "object" || root === null) &&
       (line += ": " + root);
     circular && (line += " (circular ref.)");
 
@@ -60,12 +65,13 @@ function growBranch(
     currTree.tree += "\n";
   }
 
-  if (!circular && typeof root === "object") {
+  if (!circular && typeof root === "object" && root !== null) {
     const keys = Object.keys(root);
     keys.forEach(function (branch) {
       lastKey = ++index === keys.length;
       growBranch(
         branch,
+        // @ts-ignore temporary refactor
         root[branch],
         lastKey,
         lastStatesCopy,
@@ -77,7 +83,7 @@ function growBranch(
 }
 
 export default function jsonTree(
-  obj: Json,
+  obj: JSONValue,
   options: Options = {},
 ) {
   const baseOptions: Required<Options> = {
