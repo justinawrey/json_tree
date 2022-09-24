@@ -1,4 +1,5 @@
 import { jsonTree } from "./mod.ts";
+import { path } from "./deps.ts";
 
 if (import.meta.main) {
   const args = Deno.args.slice();
@@ -6,7 +7,9 @@ if (import.meta.main) {
   switch (command) {
     case "path":
       for (const arg of args) {
-        const data = await import(arg, { assert: { type: "json" } });
+        const data = await import(path.resolve(Deno.cwd(), arg), {
+          assert: { type: "json" },
+        });
         console.log(jsonTree(data));
       }
       break;
