@@ -1,12 +1,14 @@
 // deno-lint-ignore no-explicit-any
 type JSON = Record<string, any>;
 
+type lineTransform = (
+  prevLine: string,
+  flags: { last: boolean },
+) => string;
+
 interface Options {
   showValues?: boolean;
-  lineTransform?: (
-    prevLine: string,
-    flags: { last: boolean },
-  ) => string;
+  lineTransform?: lineTransform;
 }
 
 interface State {
