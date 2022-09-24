@@ -1,6 +1,6 @@
-# JSON Tree
+# jsontree
 
-Json Tree converts a JS object into a nice, visible depth-indented tree for
+`jsontree` converts a JS object into a nice, visible depth-indented tree for
 console printing. The structure generated is similar to what you get by running
 the `tree` command on Unixy platforms.
 
