@@ -8,7 +8,7 @@ type JSONValue =
 
 type lineTransform = (
   prevLine: string,
-  flags: { last: boolean },
+  flags: { last: boolean; leaf: boolean },
 ) => string;
 
 interface Options {
@@ -61,7 +61,17 @@ function growBranch(
       (line += ": " + root);
     circular && (line += " (circular ref.)");
 
-    currTree.tree += options.lineTransform(line, { last });
+    // Figure out if we're on a leaf node
+    let folder: boolean;
+    if (typeof root === "object" && root !== null) {
+      folder = Object.keys(root).length > 0;
+    } else if (Array.isArray(root)) {
+      folder = root.length > 0;
+    } else {
+      folder = false;
+    }
+
+    currTree.tree += options.lineTransform(line, { last, leaf: !folder });
     currTree.tree += "\n";
   }
 
