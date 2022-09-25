@@ -55,11 +55,6 @@ function growBranch(
         circular = true;
       }
     });
-    line += makePrefix(key, last) + key;
-    options.showValues &&
-      (typeof root !== "object" || root === null) &&
-      (line += ": " + root);
-    circular && (line += " (circular ref.)");
 
     // Figure out if we're on a leaf node
     let folder: boolean;
@@ -71,8 +66,16 @@ function growBranch(
       folder = false;
     }
 
-    currTree.tree += options.lineTransform(line, { last, leaf: !folder });
-    currTree.tree += "\n";
+    line += makePrefix(key, last);
+
+    // Apply showValues option
+    options.showValues &&
+      (typeof root !== "object" || root === null) &&
+      (key += ": " + root);
+    circular && (key += " (circular ref.)");
+
+    line += options.lineTransform(key, { last, leaf: !folder });
+    currTree.tree += line + "\n";
   }
 
   if (!circular && typeof root === "object" && root !== null) {
