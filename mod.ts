@@ -1,3 +1,5 @@
+import { colors } from "./deps.ts";
+
 type JSONValue =
   | string
   | number
@@ -6,14 +8,26 @@ type JSONValue =
   | { [x: string]: JSONValue }
   | Array<JSONValue>;
 
-type lineTransform = (
-  prevLine: string,
-  flags: { last: boolean; leaf: boolean },
+type KeyTransformFn = (
+  key: string,
+  leaf: boolean,
 ) => string;
+
+type ValueTransformFn = (value: string) => string;
 
 interface Options {
   showValues?: boolean;
-  lineTransform?: lineTransform;
+  align?: boolean;
+  seperator?: string;
+  keyTransform?: KeyTransformFn;
+  valueTransform?: ValueTransformFn;
+}
+
+interface Line {
+  prefix: string;
+  key: string;
+  value?: string;
+  leaf: boolean;
 }
 
 interface State {
@@ -36,20 +50,19 @@ function growBranch(
   root: JSONValue,
   last: boolean,
   lastStates: State[],
-  currTree: { tree: string },
-  options: Required<Options>,
+  lines: Line[],
 ) {
-  let line = "";
   let index = 0;
   let lastKey;
   let circular = false;
 
   const lastStatesCopy = lastStates.slice(0);
 
+  let prefix = "";
   if (lastStatesCopy.push({ tree: root, last }) && lastStates.length > 0) {
     lastStates.forEach(({ tree, last }, idx) => {
       if (idx > 0) {
-        line += (last ? " " : "│") + "  ";
+        prefix += (last ? " " : "│") + "  ";
       }
       if (!circular && tree === root) {
         circular = true;
@@ -66,16 +79,25 @@ function growBranch(
       folder = false;
     }
 
-    line += makePrefix(key, last);
+    prefix += makePrefix(key, last);
 
-    // Apply showValues option
-    options.showValues &&
-      (typeof root !== "object" || root === null) &&
-      (key += ": " + root);
-    circular && (key += " (circular ref.)");
+    let value: string | undefined;
+    const terminated = typeof root !== "object" || root === null;
 
-    line += options.lineTransform(key, { last, leaf: !folder });
-    currTree.tree += line + "\n";
+    if (terminated) {
+      value = root === null ? "null" : root.toString();
+    }
+
+    if (terminated && circular) {
+      value += " (circular ref.)";
+    }
+
+    lines.push({
+      prefix,
+      key,
+      value,
+      leaf: !folder,
+    });
   }
 
   if (!circular && typeof root === "object" && root !== null) {
@@ -88,8 +110,7 @@ function growBranch(
         root[branch],
         lastKey,
         lastStatesCopy,
-        currTree,
-        options,
+        lines,
       );
     });
   }
@@ -101,20 +122,60 @@ export default function jsonTree(
 ) {
   const baseOptions: Required<Options> = {
     showValues: true,
-    lineTransform: (prevLine) => prevLine,
+    align: false,
+    seperator: ": ",
+    keyTransform: (prevLine) => colors.gray(prevLine),
+    valueTransform: (prevLine) => prevLine,
   };
 
-  const mergedOptions = { ...baseOptions, ...options };
+  const {
+    keyTransform,
+    seperator,
+    valueTransform,
+    align,
+    showValues,
+  } = { ...baseOptions, ...options };
 
-  const currTree = { tree: "" };
+  const lines: Line[] = [];
   growBranch(
     ".",
     obj,
     false,
     [],
-    currTree,
-    mergedOptions,
+    lines,
   );
 
-  return currTree.tree;
+  function joinLines(lines: Line[], maxLen = 0): string {
+    const outLines: string[] = [];
+
+    for (const { prefix, key, value, leaf } of lines) {
+      const padding = maxLen - prefix.length - key.length;
+      let line = prefix + keyTransform(key, leaf);
+
+      if (showValues && value) {
+        const paddingString = padding > 0 ? new Array(padding).join(" ") : "";
+        line += paddingString + seperator +
+          valueTransform(value);
+      }
+
+      outLines.push(line);
+    }
+
+    return outLines.join("\n");
+  }
+
+  if (align) {
+    let maxLen = 0;
+    for (const { prefix, key } of lines) {
+      const len = prefix.length + key.length;
+
+      if (len > maxLen) {
+        maxLen = len;
+      }
+    }
+
+    return joinLines(lines, maxLen + 1);
+  }
+
+  return joinLines(lines);
 }
